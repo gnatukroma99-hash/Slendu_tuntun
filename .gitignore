@@ -1,0 +1,21 @@
+node_modules/
+dist/
+dist-next/
+dist-*/
+test-results/
+test-results-*/
+playwright-report/
+.env
+.env.*
+!.env.example
+.ssh/
+*.log
+*.blend[0-9]*
+/art/blender-v1/checkpoints/
+/art/blender-v1/browser-review/
+/package-lock.transfer-original.json
+# Original-game assets are imported locally; this repository does not redistribute them.
+/public/assets/
+.DS_Store
+__pycache__/
+*.pyc

@@ -1,0 +1,55 @@
+{
+  "generator": "Blender 5.2.3 LTS",
+  "source": "art/blender-v1/STW_Models_V1.blend",
+  "orientation": "glTF Y-up, front +Z; grounded origin",
+  "assets": [
+    {
+      "asset": "player",
+      "file": "player.glb",
+      "bytes": 198756,
+      "triangles": 6362,
+      "root": "STW_Player"
+    },
+    {
+      "asset": "rabbit",
+      "file": "rabbit.glb",
+      "bytes": 183340,
+      "triangles": 6446,
+      "root": "STW_Rabbit"
+    },
+    {
+      "asset": "case",
+      "file": "case.glb",
+      "bytes": 167192,
+      "triangles": 3420,
+      "root": "STW_Case"
+    },
+    {
+      "asset": "sahur",
+      "file": "sahur.glb",
+      "source": "art/blender-v1/sahur/STW_Sahur_V1.blend",
+      "bytes": 239064,
+      "triangles": 11230,
+      "root": "STW_Sahur",
+      "clips": [{ "name": "Sahur_Throw", "seconds": 0.7, "releaseSeconds": 0.3 }]
+    },
+    {
+      "asset": "sahur-bat",
+      "file": "sahur-bat.glb",
+      "source": "art/blender-v1/sahur/STW_Sahur_V1.blend",
+      "bytes": 34100,
+      "triangles": 1664,
+      "root": "STW_Sahur_Bat",
+      "orientation": "Y-up, flight pivot close to the centre"
+    },
+    {
+      "asset": "sahur-buff",
+      "file": "sahur-buff.glb",
+      "source": "art/blender-v1/sahur/STW_Sahur_Champion.blend",
+      "bytes": 474296,
+      "triangles": 20550,
+      "root": "STW_Sahur_Buff",
+      "clips": [{ "name": "Sahur_Throw", "seconds": 0.7, "releaseSeconds": 0.3 }]
+    }
+  ]
+}

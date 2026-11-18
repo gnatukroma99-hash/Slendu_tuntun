@@ -1,0 +1,58 @@
+import { test, expect } from '@playwright/test';
+
+test('the solo hardcore result unlocks the champion without replacing Sahur, including after reload', async ({ page }, info) => {
+  await page.goto('/?test=1'); await expect(page.locator('#start')).toBeEnabled();
+  await page.locator('[data-open-shop]').first().click();
+  const regular = page.locator('[data-item="sahur"]'), champion = page.locator('[data-item="sahur-buff"]');
+  await champion.click(); await expect(page.locator('#shop-message')).toContainText('Победи в соло-хардкоре');
+  await page.evaluate(() => window.__gameTest.openCaseWithRoll(0.005));
+  await regular.click(); await page.locator('#close-shop').click();
+  await page.locator('#game-mode').selectOption('hardcore'); await page.locator('#start').click();
+  await page.evaluate(() => { for (let i = 0; i < 10; i++) { window.__gameTest.teleportToCollectible(i); document.querySelector('#collect').click(); } });
+  await expect(page.locator('#challenge-reward')).toBeVisible(); await page.locator('#result-exit').click();
+  await page.reload(); await expect(page.locator('#start')).toBeEnabled();
+  await page.locator('[data-open-shop]').first().click(); await expect(regular).toHaveAttribute('aria-pressed', 'true');
+  await champion.click(); await expect(champion).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => window.__gameTest.sahurPreview())).toBe('sahur-buff');
+  if (info.project.name === 'desktop') await page.locator('#skin-preview').screenshot({ path: info.outputPath('champion-wardrobe.png') });
+  await regular.click(); await expect(regular).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('Sahur drops from the case, equips the Blender model, casts at the crosshair and stuns an enemy', async ({ page }, info) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/?test=1');
+  await expect(page.locator('#start')).toBeEnabled();
+  await page.locator('[data-open-shop]').first().click();
+  expect(await page.evaluate(() => window.__gameTest.animateCaseWithRoll(0.007))).toBe(true);
+  await expect(page.locator('#case-prize-name')).toHaveText('Тун Тун Тун Сахур');
+  await expect(page.locator('#case-prize-note')).toContainText('оглушение на 10 секунд');
+  await expect.poll(() => page.evaluate(() => window.__gameTest.modelSnapshot().prize)).toBe('sahur');
+  if (info.project.name === 'desktop') await page.screenshot({ path: info.outputPath('sahur-reward.png') });
+  await page.locator('#case-equip').click();
+  expect((await page.evaluate(() => window.__gameTest.contentSnapshot())).appearance.skin).toBe('sahur');
+  await page.locator('#close-shop').click();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.locator('#game-location').selectOption('station');
+  await page.locator('#start').click();
+  await page.evaluate(() => window.__gameTest.setupSoloBatLane());
+  const button = page.locator('#ability-button');
+  await expect(button).toBeEnabled();
+  await expect(button).toHaveAttribute('aria-label', /Бросить биту/);
+  expect(await page.evaluate(() => window.__gameTest.sahurSnapshot().holdingBat)).toBe(true);
+  if (info.project.name === 'desktop') await page.keyboard.press('KeyR');
+  else await button.tap();
+  await expect(button).toBeDisabled();
+  await expect(page.locator('#toast')).toContainText('оглушение на 10 секунд');
+  await expect.poll(() => page.evaluate(() => window.__gameTest.sahurSnapshot().stunned)).toBe(true);
+  expect(await page.evaluate(() => window.__gameTest.sahurSnapshot().holdingBat)).toBe(false);
+  const enemy = await page.evaluate(() => window.__gameTest.snapshot().enemy);
+  await expect.poll(() => page.evaluate(() => Math.abs(window.__gameTest.sahurSnapshot().enemyTilt))).toBeGreaterThan(0.025);
+  expect(await page.evaluate(() => window.__gameTest.snapshot().enemy)).toEqual(enemy);
+  if (info.project.name === 'desktop') await page.screenshot({ path: info.outputPath('sahur-stun.png') });
+  await page.evaluate(() => window.__gameTest.advanceSoloTime(11));
+  await expect.poll(() => page.evaluate(() => window.__gameTest.sahurSnapshot().stunned)).toBe(false);
+  await expect.poll(() => page.evaluate(() => window.__gameTest.snapshot().enemy)).not.toEqual(enemy);
+  expect(errors).toEqual([]);
+});

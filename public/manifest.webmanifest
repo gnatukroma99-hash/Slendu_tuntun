@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "Slendytubbies II · Web Adaptation",
+  "short_name": "Slendytubbies Web",
+  "description": "Неофициальная веб-адаптация: одиночная игра, кооператив по Wi-Fi и сенсорное управление для Android.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#090d0c",
+  "theme_color": "#090d0c",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

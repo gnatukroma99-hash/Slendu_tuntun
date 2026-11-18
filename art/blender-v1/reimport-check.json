@@ -1,0 +1,80 @@
+{
+  "reimport": [
+    {
+      "asset": "player",
+      "objects": 29,
+      "meshes": 25,
+      "roots": [
+        "STW_Player.001"
+      ],
+      "minimum_z": 0.0,
+      "dimensions": [
+        1.052000105381012,
+        0.6529998481273651,
+        1.7829999923706055
+      ],
+      "contains_camera_or_light": false,
+      "materials": [
+        "STW_Dark",
+        "STW_Eye_Glint",
+        "STW_Face",
+        "STW_Screen_Frame",
+        "STW_Screen_Glass",
+        "STW_Skin"
+      ],
+      "triangles": 6362
+    },
+    {
+      "asset": "rabbit",
+      "objects": 30,
+      "meshes": 27,
+      "roots": [
+        "STW_Rabbit.001"
+      ],
+      "minimum_z": 0.0,
+      "dimensions": [
+        0.7799999117851257,
+        0.7189999222755432,
+        1.6476258039474487
+      ],
+      "contains_camera_or_light": false,
+      "materials": [
+        "STW_Dark",
+        "STW_Eye_Glint",
+        "STW_Rabbit_Fur",
+        "STW_Rabbit_Patch",
+        "STW_Rabbit_Pink"
+      ],
+      "triangles": 6446
+    },
+    {
+      "asset": "case",
+      "objects": 40,
+      "meshes": 38,
+      "roots": [
+        "STW_Case.001"
+      ],
+      "minimum_z": 0.0,
+      "dimensions": [
+        1.2200000286102295,
+        0.8303601145744324,
+        0.8094544410705566
+      ],
+      "contains_camera_or_light": false,
+      "materials": [
+        "STW_Case_Brass",
+        "STW_Case_Interior",
+        "STW_Case_Planks",
+        "STW_Case_Wood",
+        "STW_Dark"
+      ],
+      "triangles": 3420
+    }
+  ],
+  "preserved_scene": "Scene",
+  "user_objects": [
+    "Camera",
+    "Cube",
+    "Light"
+  ]
+}

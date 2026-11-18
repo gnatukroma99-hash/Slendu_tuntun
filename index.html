@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#090d0c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="Веб-адаптация Slendytubbies II: кооператив по Wi-Fi на 2–4 игроков и сенсорное управление для Android." />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>Slendytubbies II · Web</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="game" aria-label="Трёхмерный игровой мир"></canvas>
+      <div class="vignette" aria-hidden="true"></div>
+      <div id="danger" aria-hidden="true"></div>
+
+      <section id="menu" class="screen">
+        <div class="menu-content">
+          <div class="eyebrow"><span class="signal"></span> ANDROID + LAN <span class="eyebrow-line"></span> WEB ADAPTATION / 0.2</div>
+          <p class="edition">ZEO<span>WORKS</span> / НЕОФИЦИАЛЬНАЯ АДАПТАЦИЯ</p>
+          <h1>SLENDY<span>TUBBIES<b>II</b></span></h1>
+          <p class="subtitle">ТЫ ЗДЕСЬ НЕ ОДИН.</p>
+          <div class="menu-divider"></div>
+          <div class="map-card">
+            <span class="map-number">01</span>
+            <div><span class="label">КЛАССИЧЕСКАЯ КАРТА</span><h2>Лес. После полуночи.</h2><p>Найди 10 порций крема. Не позволяй ему приблизиться.</p></div>
+            <span class="map-arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="mode-panel">
+            <div class="mode-choice"><label class="label" for="game-mode">РЕЖИМ ИГРЫ</label><select id="game-mode" aria-describedby="mode-description"></select><p id="mode-description" role="status"></p></div>
+            <div class="mode-choice"><label class="label" for="game-location">ЛОКАЦИЯ</label><select id="game-location" aria-describedby="location-description"></select><p id="location-description"></p></div>
+            <div class="mode-choice"><label class="label" for="game-monster">ПРЕСЛЕДОВАТЕЛЬ</label><select id="game-monster" aria-describedby="monster-description"></select><p id="monster-description"></p></div>
+          </div>
+          <div class="menu-tools"><button class="secondary" data-open-shop>МАГАЗИН СКИНОВ</button><span class="wallet">МОНЕТЫ: <b data-coins>120</b></span></div>
+          <div class="settings-row">
+            <label>ГРАФИКА<select id="quality"><option value="low">Экономная · для телефона</option><option value="medium">Сбалансированная</option><option value="high">Высокая</option></select></label>
+            <label>ОБЗОР<input id="sensitivity" type="range" min="0.5" max="2" value="1" step="0.1" aria-label="Чувствительность обзора" /><span class="auto-option"><input id="auto-pickup" type="checkbox" checked /> Автоподбор на ходу</span><span class="auto-option"><input id="hardcore-effects" type="checkbox" checked /> Помехи и шутки в хардкоре</span></label>
+          </div>
+          <button id="start" class="primary" disabled><span id="start-label">ЗАГРУЗКА ЛЕСА…</span><span aria-hidden="true">→</span></button>
+          <div class="load-track"><div id="load-progress"></div></div>
+          <p id="load-status" role="status">Подготовка ресурсов…</p>
+          <div class="controls-description"><span>ТЕЛЕФОН <b>Джойстик + обзор пальцем</b></span><span>КОМПЬЮТЕР <b>WASD · мышь · Shift · F · E</b></span></div>
+          <button id="open-lan" class="secondary" disabled>С ДРУЗЬЯМИ · 2–4 ИГРОКА</button>
+          <p class="warning">Содержит внезапные пугающие сцены и громкие звуки. Лучше играть в наушниках.</p>
+        </div>
+        <div class="menu-footer"><span>ОРИГИНАЛЬНЫЕ РЕСУРСЫ · НОВЫЙ ВЕБ-ДВИЖОК</span><span>SOLO + LAN CO-OP</span></div>
+      </section>
+
+      <section id="hud" hidden aria-label="Игровой интерфейс">
+        <header class="hud-top"><div class="objective"><span id="objective-label" class="label">СОБЕРИ КРЕМ</span><strong><span id="collected">00</span><span id="objective-total" class="total"> / 10</span></strong></div><div class="hud-actions"><button id="ability-button" class="icon-button" hidden aria-label="Способность · R">R</button><button id="sound" class="icon-button" aria-label="Выключить звук" aria-pressed="true">♪</button><button id="pause" class="icon-button" aria-label="Пауза">Ⅱ</button></div></header>
+        <div class="location"><span class="signal"></span> <span id="location-name">CLASSIC / NIGHT</span> <span id="timer">00:00</span></div>
+        <div id="signal-hint"></div>
+        <div id="mode-badge"></div>
+        <div id="round-status" role="status"></div>
+        <button id="emote-button" title="Фирменная эмоция · G" aria-label="Фирменная эмоция · G">☺ <span>G</span></button>
+        <aside id="emote-inset" hidden><canvas width="180" height="168" aria-hidden="true"></canvas><strong role="status"></strong></aside>
+        <button id="tv-tuner" hidden title="Переключить канал · V"></button>
+        <div id="network-status" hidden></div>
+        <div id="spectator-banner" hidden><p id="spectator-note">Тебя поймали. Команда продолжает — наблюдай за друзьями.</p><button id="share-signal" class="secondary" hidden>ПЕРЕДАТЬ КАНАЛ В ЧАТ</button><button id="leave-spectator" class="secondary">ВЫЙТИ В МЕНЮ</button></div>
+        <div id="crosshair" aria-hidden="true">·</div>
+        <div id="pickup-prompt" hidden>КРЕМ РЯДОМ <span>НАЖМИ E / КНОПКУ РУКИ</span></div>
+        <div id="toast" role="status"></div>
+        <div class="stamina"><span>ВЫНОСЛИВОСТЬ</span><div><i id="stamina-fill"></i></div></div>
+        <div id="touch-controls">
+          <div id="joystick" aria-label="Джойстик движения"><div class="joystick-rim"></div><div id="joystick-knob"></div></div>
+          <span class="look-hint">КРЕМ ПОДБИРАЕТСЯ НА ХОДУ · ОБЗОР СПРАВА</span>
+          <div class="touch-actions"><button id="flashlight" class="round-button active" aria-label="Фонарик" aria-pressed="true">☼</button><button id="collect" class="round-button" aria-label="Подобрать крем">✋</button><button id="sprint" class="round-button" aria-label="Бежать">»</button></div>
+        </div>
+      </section>
+      <div id="seeker-cover" hidden><strong>Не подглядывай!</strong><span id="seeker-countdown"></span></div>
+      <div id="static-noise" hidden aria-hidden="true"></div>
+      <aside id="fake-ad" hidden><span class="label">ВНУТРИИГРОВАЯ ШУТКА · НЕ НАСТОЯЩАЯ РЕКЛАМА</span><strong>Крем сам себя не купит!</strong><p>Кролики предлагают подписку на морковный воздух. Не ведись.</p><button id="close-fake-ad">ЗАКРЫТЬ · X</button></aside>
+
+      <section id="pause-screen" class="screen modal-screen" hidden>
+        <div class="modal"><span class="label">СИГНАЛ ПРИОСТАНОВЛЕН</span><h2>Пауза.</h2><p id="pause-description">Лес подождёт. Сделай вдох.</p><button id="resume" class="primary">ПРОДОЛЖИТЬ <span>→</span></button><button id="exit" class="secondary">В ГЛАВНОЕ МЕНЮ</button></div>
+      </section>
+      <section id="lan-screen" class="screen modal-screen" hidden aria-label="Игра по локальной сети">
+        <div class="modal lan-modal">
+          <span class="label">КООПЕРАТИВ · ОДИН ЛЕС НА ВСЕХ</span>
+          <h2>Не оставайся один.</h2>
+          <div id="lan-setup">
+            <label class="field-label">ТВОЁ ИМЯ<input id="player-name" maxlength="18" autocomplete="nickname" placeholder="Игрок" /></label>
+            <button id="create-room" class="primary">СОЗДАТЬ КОМНАТУ <span>+</span></button>
+            <div class="join-row"><label class="field-label">КОД КОМНАТЫ<input id="join-code" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="ABC234" /></label><button id="join-room" class="secondary">ВОЙТИ</button></div>
+          </div>
+          <div id="room-lobby" hidden>
+            <span class="label">КОД ДЛЯ ДРУЗЕЙ</span><div id="room-code"></div>
+            <ul id="room-players"></ul>
+            <div class="invite-row"><input id="invite-url" readonly aria-label="Ссылка на комнату" /><button id="copy-invite" class="secondary">КОПИЯ</button></div>
+            <label class="field-label">РЕЖИМ ХОЗЯИНА<select id="room-mode"></select></label>
+            <div class="room-world"><label class="field-label">ЛОКАЦИЯ<select id="room-location"></select></label><label class="field-label">МОНСТР<select id="room-monster"></select></label></div>
+            <p id="room-mode-description"></p>
+            <button class="secondary" data-open-shop>МОЙ ОБРАЗ · МАГАЗИН</button>
+            <button id="start-room" class="primary" disabled>ЖДЁМ ИГРОКОВ</button>
+            <button id="leave-room" class="secondary">ВЫЙТИ ИЗ КОМНАТЫ</button>
+          </div>
+          <p id="lan-message" role="status"></p>
+          <p id="lan-addresses" class="lan-help">На всех телефонах подключитесь к одной сети Wi-Fi. Один создаёт комнату, остальные вводят её код.</p>
+          <button id="lan-back" class="secondary">НАЗАД В МЕНЮ</button>
+        </div>
+      </section>
+      <div id="network-banner" hidden role="status">Связь потеряна. Переподключение…</div>
+      <section id="shop-screen" class="screen modal-screen" hidden aria-label="Магазин скинов">
+        <div class="shop-modal">
+          <div class="shop-heading"><div><span class="label">ГАРДЕРОБ ХРАНИТЕЛЯ</span><h2>Твой образ.</h2></div><button id="close-shop" class="secondary">ЗАКРЫТЬ</button></div>
+          <form id="skin-code-form" class="skin-code-form">
+            <label for="skin-code" class="field-label">Промокод</label>
+            <div class="skin-code-row"><input id="skin-code" type="text" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="go" placeholder="Введи код" required><button type="submit" class="secondary">Активировать</button></div>
+            <p id="skin-code-result" role="status" aria-live="polite"></p>
+          </form>
+          <div class="shop-layout"><aside class="shop-preview"><canvas id="skin-preview" width="280" height="300" aria-label="3D-примерка скина"></canvas><p class="wallet">МОНЕТЫ: <b data-coins>120</b></p><p>+5 за свой подбор · +50 за победу.<br>120 монет на первый образ. Без платежей.</p><p>Прогресс хранится в этом браузере. В режиме порося цвет тела розовый, шапка и антенна сохраняются.</p></aside><div id="shop-items"></div></div>
+          <section class="case-card"><span class="label">КЕЙС ХРАНИТЕЛЯ · ТОЛЬКО ИГРОВЫЕ МОНЕТЫ</span><h3>Что там шуршит?</h3><p>100 монет за открытие. Легендарные скины — 1% всего: по 0,5% на Зайца и Сахура. Повтор: возврат 50 монет. Без гарантированного выпадения, торговли и платежей.</p><p><b>R / кнопка способности.</b> Заяц: превращение и 6 приманок для монстра на 10 секунд. Сахур: бросок биты, который оглушает врага на 10 секунд. В PvP бросок доступен после форы. Перезарядка — 45 секунд.</p><button id="open-case" class="primary">ОТКРЫТЬ · 100 МОНЕТ</button><p id="case-result" role="status"></p></section>
+          <p id="shop-message" role="status"></p>
+          <button id="close-shop-bottom" class="secondary">ЗАКРЫТЬ МАГАЗИН</button>
+        </div>
+      </section>
+      <section id="case-opening" class="case-opening" hidden role="dialog" aria-modal="true" aria-labelledby="case-opening-title" data-phase="closed">
+        <div class="case-opening-panel">
+          <header class="case-opening-heading"><div><span class="label">КЕЙС ХРАНИТЕЛЯ</span><h2 id="case-opening-title">Морковная посылка.</h2></div><button id="case-dismiss" aria-label="Закрыть открытие кейса">×</button></header>
+          <div id="case-opening-play">
+            <div id="case-model-stage" class="case-model-stage" hidden aria-hidden="true"></div>
+            <div id="case-chest" class="case-chest" aria-hidden="true"><div class="case-shine"></div><div class="case-crate"><i class="case-strap left"></i><i class="case-strap right"></i><span class="case-seal"></span></div><div id="case-lid" class="case-lid"><i></i></div><div class="case-lock"></div></div>
+            <p id="case-opening-status" class="case-opening-status">ОТКРЫВАЕМ ЗАМОК…</p>
+            <div id="case-reel-window" class="case-reel-window" aria-hidden="true"><div id="case-reel" class="case-reel"></div><i class="case-reel-marker"></i></div>
+          </div>
+          <div id="case-opening-result" class="case-opening-result" hidden>
+            <span id="case-prize-rarity" class="case-prize-rarity"></span>
+            <div id="case-prize-stage" class="case-prize-stage"><canvas id="case-prize-preview" width="320" height="220" aria-label="3D-модель кейса и примерка награды"></canvas><span id="case-prize-fallback" hidden aria-hidden="true">✦</span></div>
+            <h3 id="case-prize-name"></h3><p id="case-prize-note"></p>
+            <div class="case-prize-actions"><button id="case-equip" class="primary">НАДЕТЬ ПРЕДМЕТ</button><button id="case-done" class="secondary">В ГАРДЕРОБ</button></div>
+          </div>
+          <footer class="case-opening-footer"><button id="case-skip" class="secondary">ПРОПУСТИТЬ АНИМАЦИЮ</button><span id="case-opening-cost"></span><p>Награда сохраняется сразу. Пропуск и закрытие не меняют результат и не открывают второй кейс.</p></footer>
+          <p id="case-opening-live" class="case-sr-only" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+      <button id="chat-toggle" hidden aria-controls="chat-panel">ЧАТ · T</button>
+      <aside id="chat-panel" hidden aria-label="Чат комнаты">
+        <header><strong>ЧАТ КОМНАТЫ</strong><button id="chat-close" aria-label="Закрыть чат">×</button></header>
+        <ol id="chat-messages" aria-live="polite" aria-label="Сообщения"></ol>
+        <form id="chat-form"><input id="chat-input" maxlength="160" autocomplete="off" placeholder="Сообщение друзьям…" aria-label="Сообщение" /><button type="submit">➤</button></form>
+        <p id="chat-status" role="status"></p>
+        <p>Только участники комнаты · 160 символов · 1 сообщение/сек. В кооперативе мир не останавливается.</p>
+      </aside>
+      <section id="result-screen" class="screen modal-screen" hidden>
+        <div class="modal"><span id="result-label" class="label"></span><h2 id="result-title"></h2><p id="result-description"></p><p id="result-stats"></p><p id="challenge-reward" role="status" hidden><strong>ИСПЫТАНИЕ ПРОЙДЕНО · САХУР-КАЧОК</strong><br>Новый облик ждёт в гардеробе. Обычный Сахур тоже остаётся у тебя.</p>
+          <figure id="round-photo" hidden><canvas id="team-photo" width="960" height="558" role="img" aria-label="Командное фото"></canvas><figcaption><a id="save-photo" hidden download>↓ СОХРАНИТЬ ФОТО · PNG</a></figcaption></figure>
+          <button id="restart" class="primary">ЕЩЁ ОДНА ПОПЫТКА <span>→</span></button><button id="result-exit" class="secondary">В ГЛАВНОЕ МЕНЮ</button></div>
+      </section>
+      <section id="error-screen" class="screen modal-screen" hidden><div class="modal"><span class="label">НЕ УДАЛОСЬ ЗАПУСТИТЬ</span><h2>Нет сигнала.</h2><p id="error-message"></p><button id="retry" class="primary">ПОВТОРИТЬ</button></div></section>
+      <div id="rotate-hint" hidden>↻ Для удобства поверни телефон горизонтально</div>
+      <div id="jumpscare" hidden aria-hidden="true"></div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

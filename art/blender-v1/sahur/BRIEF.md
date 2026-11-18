@@ -1,0 +1,5 @@
+# Sahur · art direction v1
+
+Text concept only (no generated/reference texture). A grounded, carved chestnut forest mascot: one slightly crooked rounded log silhouette, large pale inset eyes with tiny catchlights, a wry carved smile, jointed wooden limbs and an oversized turned-wood bat. Show growth rings at end grain, limited cuts and knots along the warm vertical grain, and dark leather with restrained gold bands at the grip. Avoid neon, noisy photoreal detail and any obstruction of the face. Muted woodland lighting and proportions compatible with the existing Slendytubbies avatars; keep cosmetics attachable and the feet planted. Use the same small-scale visual checks in Blender and the browser.
+
+The throwing silhouette reads in three beats: arm drawn up and back, quick forward release, heavy follow-through back to rest. `Sahur_Throw`: 0.7 s at 30 fps; release at 0.3 s. The browser uses server-timed release, then a spinning bat and a subdued hit reaction with amber orbiting stars on the actual enemy, not a replacement model. Stun lasts 10 game seconds. Reduced motion removes cosmetic spinning/sway.
